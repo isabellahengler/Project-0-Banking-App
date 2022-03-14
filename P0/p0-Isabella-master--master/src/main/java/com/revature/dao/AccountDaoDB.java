@@ -107,11 +107,11 @@ public class AccountDaoDB implements AccountDao {
 
 			while (rs.next()) {
 				Account nxS = new Account();
-				nxS.setId(rs.getInt("acc_Id"));
-				nxS.setOwnerId(rs.getInt("own_Id"));
+				nxS.setId(rs.getInt("accountID"));
+				nxS.setOwnerId(rs.getInt("ownerID"));
 				nxS.setBalance(rs.getDouble("balance"));
 				nxS.setApproved(rs.getBoolean("approved"));
-				String gotAt = rs.getString("acc_type");
+				String gotAt = rs.getString("type");
 				AccountType enumVal = AccountType.valueOf(gotAt);
 				nxS.setType(enumVal);
 

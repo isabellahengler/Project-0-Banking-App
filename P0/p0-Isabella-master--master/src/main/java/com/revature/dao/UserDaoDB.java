@@ -159,11 +159,15 @@ public class UserDaoDB implements UserDao {
 					nxU.setUsername(rs.getString("user_name"));
 					nxU.setPassword(rs.getString("password"));
 					String gotT =rs.getString("usertype");
+					if (gotT!= null) {
 					UserType enumVal = UserType.valueOf(gotT);
 					nxU.setUserType(enumVal);
+					}
 					
-					users.add(nxU);}
-				}
+					users.add(nxU);
+				
+			}
+			}
 					 catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
