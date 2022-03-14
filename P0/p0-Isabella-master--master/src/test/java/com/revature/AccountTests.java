@@ -113,7 +113,7 @@ public class AccountTests extends PointWatcher {
 	@Points(3)
 	public void testCreateNewAccount() {
 		User dummyUser = new User();
-		Account act = actSrv.createNewAccount(dummyUser);
+		Account act = actSrv.createNewAccount(dummyUser, false);
 		assertEquals(act.getBalance(), AccountService.STARTING_BALANCE, 0.01);
 		assertFalse(act.isApproved());
 		verify(dao).addAccount(act);
@@ -125,7 +125,7 @@ public class AccountTests extends PointWatcher {
 	@Points(1)
 	public void testUserCanViewAccountBalances() {
 		User dummyUser = new User();
-		Account act = actSrv.createNewAccount(dummyUser);
+		Account act = actSrv.createNewAccount(dummyUser, false);
 		act.setApproved(true);
 		actSrv.deposit(act, 10d);
 		double bal = dummyUser.getAccounts().get(0).getBalance();
@@ -136,7 +136,7 @@ public class AccountTests extends PointWatcher {
 	@Points(1)
 	public void testPreventTransactionsBeforeApproval() {
 		User dummyUser = new User();
-		Account act = actSrv.createNewAccount(dummyUser);
+		Account act = actSrv.createNewAccount(dummyUser, false);
 		assertFalse(act.isApproved());
 		actSrv.deposit(act, 100d);
 	}
@@ -148,7 +148,7 @@ public class AccountTests extends PointWatcher {
 		dummyEmpl.setUserType(UserType.EMPLOYEE);
 		User dummyCustomer = new User();
 		dummyCustomer.setUserType(UserType.CUSTOMER);
-		Account act = actSrv.createNewAccount(dummyCustomer);
+		Account act = actSrv.createNewAccount(dummyCustomer, false);
 		SessionCache.setCurrentUser(dummyEmpl);
 		assertFalse(act.isApproved());
 		actSrv.approveOrRejectAccount(act, true);
@@ -160,7 +160,7 @@ public class AccountTests extends PointWatcher {
 	public void testCustomerCannotApproveAccount() {
 		User dummyCustomer = new User();
 		dummyCustomer.setUserType(UserType.CUSTOMER);
-		Account act = actSrv.createNewAccount(dummyCustomer);
+		Account act = actSrv.createNewAccount(dummyCustomer, false);
 		SessionCache.setCurrentUser(dummyCustomer);
 		assertFalse(act.isApproved());
 		actSrv.approveOrRejectAccount(act, true);
@@ -170,8 +170,8 @@ public class AccountTests extends PointWatcher {
 	@Points(2)
 	public void testTransactionsAdded() {
 		User dummyUser = new User();
-		Account act = actSrv.createNewAccount(dummyUser);
-		Account act2 = actSrv.createNewAccount(dummyUser);
+		Account act = actSrv.createNewAccount(dummyUser, false);
+		Account act2 = actSrv.createNewAccount(dummyUser, false);
 		act.setApproved(true);
 		act2.setApproved(true);
 		actSrv.deposit(act, 35d);

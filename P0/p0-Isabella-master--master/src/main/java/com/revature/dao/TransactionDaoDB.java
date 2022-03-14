@@ -12,85 +12,60 @@ import java.util.List;
 
 import com.revature.beans.Account;
 import com.revature.beans.Transaction;
+import com.revature.beans.User;
 import com.revature.beans.Transaction.TransactionType;
+import com.revature.services.AccountService;
+import com.revature.services.UserService;
 import com.revature.utils.ConnectionUtil;
 
 public class TransactionDaoDB implements TransactionDao {
-
 	private static Connection conn;
 	private static Statement stmt;
 	private static PreparedStatement pstmt;
 	private static ResultSet rs;
-
-//	public TransactionDaoDB() {
-//
-//		getConnection();
-//		
-//		conn = ConnectionUtil.getConnection();
-//
-//	}
+	static User user = new User();
+	static UserDaoDB udb = new UserDaoDB();
+	static AccountDaoDB adb= new AccountDaoDB();
+	static UserService use = new UserService(udb, adb);
+	static AccountService acser = new AccountService(adb);
+	static TransactionDaoDB tdb = new TransactionDaoDB();
 
 	public List<Transaction> getAllTransactions() {
 		// TODO Auto-generated method stub
-		
-		getConnection();
-
-		List<Transaction> transactionList = new ArrayList<Transaction>();
-
-		String query = "SELECT * from transaction";
+		List<Transaction> l = new ArrayList<Transaction>();
+		Transaction t = new Transaction();
+		String testin = "select * from transaction";
 
 		try {
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/revature", "root", "Green=green123");
 
 			stmt = conn.createStatement();
-
-			rs = stmt.executeQuery(query);
+			rs = stmt.executeQuery(testin);
+			Account inU = new Account();
+			Account outU = new Account();
 
 			while (rs.next()) {
-
-				Transaction transaction = new Transaction();
-
-				transaction.setType((TransactionType) rs.getObject("type"));
-
-				transaction.setSender((Account) rs.getObject("fromAccountID"));
-
-				if (rs.getObject("type") == TransactionType.TRANSFER) {
-
-					transaction.setRecipient((Account) rs.getObject("toAccountID"));
-					
-				}
-				
-				transaction.setTimestamp((LocalDateTime) rs.getObject("timetamp"));
-				
-				transaction.setAmount(rs.getDouble("amount"));
-				
-				transactionList.add(transaction);
-				
+				inU = adb.getAccount(rs.getInt("toAccountID"));
+				outU= adb.getAccount(rs.getInt("fromAccountID"));
+				t.setAmount(rs.getDouble("amount"));
+				t.setSender(outU);
+				t.setRecipient(inU);
+				String gotAt = rs.getString("type");
+				TransactionType enumVal = TransactionType.valueOf(gotAt);
+				t.setType(enumVal);
+				l.add(t);
 			}
+				//for(Transaction y: l)
+				System.out.println(l);
+				
+				
 
-		} catch (SQLException e) {
-
+				
+		} 
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-
-		}
-
-		return transactionList;
-		
-	}
+			
+		}return null;
 	
-	public static void getConnection() {
-		
-		try {
-			
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/revature", "root", "Green=green123");
-			
-		} catch (SQLException e) {
-			// TODO: handle exception
-			
-			e.printStackTrace();
-			
-		}
-		
-		
-	}
-
-}
+	}}

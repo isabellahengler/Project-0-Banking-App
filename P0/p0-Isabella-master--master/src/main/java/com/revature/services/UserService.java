@@ -5,9 +5,9 @@ import java.util.List;
 import com.revature.beans.User;
 import com.revature.dao.AccountDao;
 import com.revature.dao.UserDao;
+import com.revature.dao.UserDaoDB;
 import com.revature.exceptions.InvalidCredentialsException;
 import com.revature.exceptions.UsernameAlreadyExistsException;
-import com.revature.utils.SessionCache;
 
 /**
  * This class should contain the business logic for performing operations on users
@@ -16,6 +16,7 @@ public class UserService {
 	
 	UserDao userDao;
 	AccountDao accountDao;
+	static UserDaoDB udb = new UserDaoDB();
 	
 	public UserService(UserDao udao, AccountDao adao) {
 		this.userDao = udao;
@@ -28,14 +29,12 @@ public class UserService {
 	 * @return the User who is now logged in
 	 */
 	public User login(String username, String password) {
-		User login = userDao.getUser(username, password);
-		if (login == null) {
-			throw new InvalidCredentialsException();
-		} else {
-			
-			SessionCache.setCurrentUser(login);
-			return login;
+		User u = null;
+		 u = userDao.getUser(username,password);
+		if( u == null){
+			throw  new InvalidCredentialsException();
 		}
+		return u;
 	}
 	
 	/**
@@ -44,25 +43,16 @@ public class UserService {
 	 * @throws UsernameAlreadyExistsException if the given User's username is taken
 	 */
 	public void register(User newUser) {
-		List<User> user = userDao.getAllUsers();
-		System.out.println(user); 
-		System.out.println(newUser); 
-
-
-		for (User u:user) {
-			System.out.println(u); 
-		if (u.getUsername().equals(newUser.getUsername())) 
+		List<User> users = udb.getAllUsers();
+		users.forEach(user ->{
 			
+			if (user.getUsername().equals( newUser.getUsername())){
+				System.out.println("This user already Exists");
+				throw new UsernameAlreadyExistsException();
+			}
 			
-	{
+		});
+		userDao.addUser(newUser);
 		
-			throw new UsernameAlreadyExistsException();
-			
-			
-		}
-		
-}
-		userDao.addUser(newUser); 
 	}
 }
-
